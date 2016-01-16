@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>labelDelimiter</key>
+	<dict>
+		<key>value</key>
+		<string>;</string>
+		<key>defaultValue</key>
+		<string>;</string>
+		<key>info</key>
+		<string>The label delimiter separates roll strings from (optional) text labels. All text after the first occurrence of the delimiter (if any) is treated as a label, and not considered to be part of the roll string. The delimiter should not contain whitespace characters, or any characters that may occur in a roll string, or else parsing problems may occur.</string>
+	</dict>
+	<key>initiativeFormat</key>
+	<dict>
+		<key>value</key>
+		<string>EXPANDED</string>
+		<key>defaultValue</key>
+		<string>EXPANDED</string>
+		<key>possibleValues</key>
+		<array>
+			<string>EXPANDED</string>
+			<string>COMPACT</string>
+		</array>
+		<key>info</key>
+		<string>The initiative format setting controls whether the output of the INIT command (i.e. the individual initiative rolls) is listed on multiple lines, or all on one line.</string>
+	</dict>
+</dict>
+</plist>
