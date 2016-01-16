@@ -1,10 +1,10 @@
 //
 //  SA_CommandResponder.m
-//  RPGBot
 //
-//  Created by Sandy Achmiz on 1/5/16.
+//	Copyright (c) 2016 Said Achmiz.
 //
-//
+//	This software is licensed under the MIT license.
+//	See the file "LICENSE" for more information.
 
 #import "SA_CommandResponder.h"
 
