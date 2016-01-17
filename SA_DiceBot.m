@@ -35,8 +35,6 @@
 {
 	if(self = [super initWithName:name])
 	{
-		NSLog(NSLocalizedString(@"Initializing SA_DiceBot with name \"%@\"", @"{display name of the bot}"), name);
-		
 		self.commandDesignatorCharacters = @".!/";
 		
 		[self loadDefaultCommandResponders];

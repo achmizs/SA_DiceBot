@@ -70,11 +70,7 @@ static NSString * const SA_LCR_SETTINGS_INITIATIVE_FORMAT_COMPACT		=	@"COMPACT";
 		
 		NSString *settingsPath = [[NSBundle bundleForClass:[self class]] pathForResource:settingsFileName ofType:@"plist"];
 		self.settings = [[SA_SettingsManager alloc] initWithPath:settingsPath];
-		if(self.settings)
-		{
-			NSLog(NSLocalizedString(@"Settings loaded successfully", nil));
-		}
-		else
+		if(self.settings == nil)
 		{
 			NSLog(NSLocalizedString(@"Could not load settings!", nil));
 		}
