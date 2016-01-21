@@ -22,7 +22,7 @@ NSString * const SA_DiceBotErrorDomain	=	@"SA_DiceBotErrorDomain";
 
 + (BOOL)setError:(NSError **)error withCode:(NSInteger)errorCode inDomain:(NSString *)domain
 {
-	if(*error == nil)
+	if(error == nil)
 	{
 		return NO;
 	}
