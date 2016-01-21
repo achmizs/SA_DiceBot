@@ -105,12 +105,9 @@ static NSString * const SA_LCR_SETTINGS_INITIATIVE_FORMAT_COMPACT		=	@"COMPACT";
 	}
 	else
 	{
-		if(error != nil)
-		{
-			*error = [SA_ErrorCatalog errorWithCode:SA_DiceBotErrorUnknownCommand
-										   inDomain:SA_DiceBotErrorDomain];
-		}
-		
+		[SA_ErrorCatalog setError:error 
+						 withCode:SA_DiceBotErrorUnknownCommand 
+						 inDomain:SA_DiceBotErrorDomain];
 		return @[];
 	}
 }
@@ -136,8 +133,9 @@ static NSString * const SA_LCR_SETTINGS_INITIATIVE_FORMAT_COMPACT		=	@"COMPACT";
 
 	if(params.count == 0)
 	{
-		*error = [SA_ErrorCatalog errorWithCode:SA_DiceBotErrorNoParameters
-									   inDomain:SA_DiceBotErrorDomain];
+		[SA_ErrorCatalog setError:error 
+						 withCode:SA_DiceBotErrorNoParameters 
+						 inDomain:SA_DiceBotErrorDomain];
 		return replies;
 	}
 	
@@ -181,8 +179,9 @@ static NSString * const SA_LCR_SETTINGS_INITIATIVE_FORMAT_COMPACT		=	@"COMPACT";
 
 	if(params.count == 0)
 	{
-		*error = [SA_ErrorCatalog errorWithCode:SA_DiceBotErrorNoParameters
-									   inDomain:SA_DiceBotErrorDomain];
+		[SA_ErrorCatalog setError:error 
+						 withCode:SA_DiceBotErrorNoParameters 
+						 inDomain:SA_DiceBotErrorDomain];
 		return replies;
 	}
 	
@@ -229,8 +228,9 @@ static NSString * const SA_LCR_SETTINGS_INITIATIVE_FORMAT_COMPACT		=	@"COMPACT";
 	
 	if(params.count == 0)
 	{
-		*error = [SA_ErrorCatalog errorWithCode:SA_DiceBotErrorNoParameters
-									   inDomain:SA_DiceBotErrorDomain];
+		[SA_ErrorCatalog setError:error 
+						 withCode:SA_DiceBotErrorNoParameters 
+						 inDomain:SA_DiceBotErrorDomain];
 		return replies;
 	}
 	
@@ -271,7 +271,7 @@ static NSString * const SA_LCR_SETTINGS_INITIATIVE_FORMAT_COMPACT		=	@"COMPACT";
 	 }];
 	
 	// If generating the init results didn't go well, set the error.
-	if(errorWhileEnumerating != nil)
+	if(errorWhileEnumerating != nil && error != nil)
 	{
 		*error = errorWhileEnumerating;
 	}
@@ -319,8 +319,9 @@ static NSString * const SA_LCR_SETTINGS_INITIATIVE_FORMAT_COMPACT		=	@"COMPACT";
 		{
 			NSLog(@"%@", [self.settings allSettings]);
 			
-			*error = [SA_ErrorCatalog errorWithCode:SA_DiceBotErrorConfigurationError
-										   inDomain:SA_DiceBotErrorDomain];
+			[SA_ErrorCatalog setError:error 
+							 withCode:SA_DiceBotErrorConfigurationError 
+							 inDomain:SA_DiceBotErrorDomain];
 		}
 	}
 	

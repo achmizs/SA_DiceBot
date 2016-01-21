@@ -104,8 +104,9 @@ static NSString * const SA_CR_SETTING_INFO					=	@"info";
 	
 	if(settingDict == nil)
 	{
-		*error = [SA_ErrorCatalog errorWithCode:SA_DiceBotErrorUnknownSetting
-									   inDomain:SA_DiceBotErrorDomain];
+		[SA_ErrorCatalog setError:error 
+						 withCode:SA_DiceBotErrorUnknownSetting 
+						 inDomain:SA_DiceBotErrorDomain];
 		return NO;
 	}
 	else
@@ -127,8 +128,9 @@ static NSString * const SA_CR_SETTING_INFO					=	@"info";
 		// If it's not one of the permitted values, error.
 		else
 		{
-			*error = [SA_ErrorCatalog errorWithCode:SA_DiceBotErrorBadValueForSetting
-										   inDomain:SA_DiceBotErrorDomain];
+			[SA_ErrorCatalog setError:error 
+							 withCode:SA_DiceBotErrorBadValueForSetting 
+							 inDomain:SA_DiceBotErrorDomain];
 			return NO;
 		}
 	}
@@ -138,8 +140,9 @@ static NSString * const SA_CR_SETTING_INFO					=	@"info";
 {
 	if(self.settings[setting] == nil)
 	{
-		*error = [SA_ErrorCatalog errorWithCode:SA_DiceBotErrorUnknownSetting
-									   inDomain:SA_DiceBotErrorDomain];
+		[SA_ErrorCatalog setError:error 
+						 withCode:SA_DiceBotErrorUnknownSetting 
+						 inDomain:SA_DiceBotErrorDomain];
 		return nil;
 	}
 	else
@@ -164,14 +167,16 @@ static NSString * const SA_CR_SETTING_INFO					=	@"info";
 {
 	if(self.settings[setting] == nil)
 	{
-		*error = [SA_ErrorCatalog errorWithCode:SA_DiceBotErrorUnknownSetting
-									   inDomain:SA_DiceBotErrorDomain];
+		[SA_ErrorCatalog setError:error 
+						 withCode:SA_DiceBotErrorUnknownSetting 
+						 inDomain:SA_DiceBotErrorDomain];
 		return nil;
 	}
 	else if(self.settings[setting][SA_CR_SETTING_INFO] == nil || [self.settings[setting][SA_CR_SETTING_INFO] isEqualToString:@""])
 	{
-		*error = [SA_ErrorCatalog errorWithCode:SA_DiceBotErrorNoSettingInfo
-									   inDomain:SA_DiceBotErrorDomain];
+		[SA_ErrorCatalog setError:error 
+						 withCode:SA_DiceBotErrorNoSettingInfo 
+						 inDomain:SA_DiceBotErrorDomain];
 		return nil;
 	}
 	else

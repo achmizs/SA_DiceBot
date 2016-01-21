@@ -20,6 +20,18 @@ NSString * const SA_DiceBotErrorDomain	=	@"SA_DiceBotErrorDomain";
 
 @implementation SA_ErrorCatalog
 
++ (BOOL)setError:(NSError **)error withCode:(NSInteger)errorCode inDomain:(NSString *)domain
+{
+	if(*error == nil)
+	{
+		return NO;
+	}
+	
+	*error = [SA_ErrorCatalog errorWithCode:errorCode 
+								   inDomain:domain];
+	return YES;
+}
+
 + (NSError *)errorWithCode:(NSInteger)errorCode inDomain:(NSString *)domain
 {
 	return [NSError errorWithDomain:domain 

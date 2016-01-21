@@ -67,12 +67,9 @@ NSString * const SA_BCR_COMMAND_ECHO	=	@"echo";
 	}
 	else
 	{
-		if(error != nil)
-		{
-			*error = [SA_ErrorCatalog errorWithCode:SA_DiceBotErrorUnknownCommand
-										   inDomain:SA_DiceBotErrorDomain];
-		}
-		
+		[SA_ErrorCatalog setError:error 
+						 withCode:SA_DiceBotErrorUnknownCommand 
+						 inDomain:SA_DiceBotErrorDomain];		
 		return @[];
 	}
 }
@@ -103,8 +100,9 @@ NSString * const SA_BCR_COMMAND_ECHO	=	@"echo";
 	}
 	else
 	{
-		*error = [SA_ErrorCatalog errorWithCode:SA_DiceBotErrorNoParameters 
-									   inDomain:SA_DiceBotErrorDomain];
+		[SA_ErrorCatalog setError:error 
+						 withCode:SA_DiceBotErrorNoParameters 
+						 inDomain:SA_DiceBotErrorDomain];
 	}
 	
 	return replies;

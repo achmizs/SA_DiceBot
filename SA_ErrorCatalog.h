@@ -32,6 +32,7 @@ enum
 
 @interface SA_ErrorCatalog : NSObject
 
++ (BOOL)setError:(NSError **)error withCode:(NSInteger)errorCode inDomain:(NSString *)domain;
 + (NSError *)errorWithCode:(NSInteger)errorCode inDomain:(NSString *)domain;
 
 @end

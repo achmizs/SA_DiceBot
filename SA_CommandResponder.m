@@ -29,8 +29,9 @@ NSString * const SA_DB_MESSAGE_INFO		=	@"SA_DB_MESSAGE_INFO";
 
 - (NSArray *)repliesForCommandString:(NSString *)commandString messageInfo:(NSDictionary *)messageInfo error:(NSError **)error
 {
-	*error = [SA_ErrorCatalog errorWithCode:SA_DiceBotErrorUnknownCommand 
-								   inDomain:SA_DiceBotErrorDomain];
+	[SA_ErrorCatalog setError:error 
+					 withCode:SA_DiceBotErrorUnknownCommand 
+					 inDomain:SA_DiceBotErrorDomain];
 	
 	return nil;
 }
