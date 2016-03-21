@@ -40,20 +40,6 @@ static NSString * const SA_LCR_SETTINGS_INITIATIVE_FORMAT_COMPACT		=	@"COMPACT";
 	NSDictionary <NSString *, CommandEvaluator> *_commandEvaluators;
 }
 
-/************************/
-#pragma mark - Properties
-/************************/
-
-- (NSDictionary <NSString *, CommandEvaluator> *)commandEvaluators
-{
-	if(_commandEvaluators == nil)
-	{
-		_commandEvaluators = [self getCommandEvaluators];
-	}
-	
-	return _commandEvaluators;
-}
-
 /**************************/
 #pragma mark - Initializers
 /**************************/
@@ -74,6 +60,11 @@ static NSString * const SA_LCR_SETTINGS_INITIATIVE_FORMAT_COMPACT		=	@"COMPACT";
 		{
 			NSLog(NSLocalizedString(@"Could not load settings!", nil));
 		}
+		
+		_commandEvaluators = @{ SA_LCR_COMMAND_ROLL	: [self repliesForCommandRoll],
+								SA_LCR_COMMAND_TRY	: [self repliesForCommandTry],
+								SA_LCR_COMMAND_INIT	: [self repliesForCommandInit]
+								};
 	}
 	return self;
 }
@@ -343,18 +334,6 @@ static NSString * const SA_LCR_SETTINGS_INITIATIVE_FORMAT_COMPACT		=	@"COMPACT";
 - (NSMutableArray <NSDictionary *> *)repliesForCommandChar:(NSArray <NSString *> *)params messageInfo:(NSDictionary *)messageInfo error:(NSError **)error
 {
 	return [NSMutableArray arrayWithCapacity:2];
-}
-
-/***************************/
-#pragma mark - Other methods
-/***************************/
-
-- (NSDictionary *)getCommandEvaluators
-{
-	return @{ SA_LCR_COMMAND_ROLL	: [self repliesForCommandRoll],
-			  SA_LCR_COMMAND_TRY	: [self repliesForCommandTry],
-			  SA_LCR_COMMAND_INIT	: [self repliesForCommandInit]
-			  };
 }
 
 @end

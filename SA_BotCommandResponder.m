@@ -26,18 +26,18 @@ NSString * const SA_BCR_COMMAND_ECHO	=	@"echo";
 	NSDictionary <NSString *, CommandEvaluator> *_commandEvaluators;
 }
 
-/************************/
-#pragma mark - Properties
-/************************/
+/**************************/
+#pragma mark - Initializers
+/**************************/
 
-- (NSDictionary <NSString *, CommandEvaluator> *)commandEvaluators
+- (instancetype)init
 {
-	if(_commandEvaluators == nil)
+	if(self = [super init])
 	{
-		_commandEvaluators = [self getCommandEvaluators];
+		_commandEvaluators = @{ SA_BCR_COMMAND_ECHO	: [self repliesForCommandEcho]
+								};
 	}
-	
-	return _commandEvaluators;
+	return self;
 }
 
 /****************************/
@@ -67,7 +67,7 @@ NSString * const SA_BCR_COMMAND_ECHO	=	@"echo";
 	}
 	else
 	{
-		[SA_ErrorCatalog setError:error 
+		[SA_ErrorCatalog setError:error
 						 withCode:SA_DiceBotErrorUnknownCommand 
 						 inDomain:SA_DiceBotErrorDomain];		
 		return @[];
@@ -108,13 +108,4 @@ NSString * const SA_BCR_COMMAND_ECHO	=	@"echo";
 	return replies;
 }
 
-/***************************/
-#pragma mark - Other methods
-/***************************/
-
-- (NSDictionary *)getCommandEvaluators
-{
-	return @{ SA_BCR_COMMAND_ECHO	: [self repliesForCommandEcho]
-			  };
-}
 @end

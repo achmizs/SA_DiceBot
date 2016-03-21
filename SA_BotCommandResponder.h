@@ -46,10 +46,4 @@ typedef NSMutableArray <NSDictionary *> * (^CommandEvaluator)(NSArray <NSString 
 - (CommandEvaluator)repliesForCommandEcho;
 - (NSMutableArray <NSDictionary *> *)repliesForCommandEcho:(NSArray <NSString *> *)params messageInfo:(NSDictionary *)messageInfo error:(NSError **)error;
 
-/***************************/
-#pragma mark - Other methods
-/***************************/
-
-- (NSDictionary *)getCommandEvaluators;
-
 @end

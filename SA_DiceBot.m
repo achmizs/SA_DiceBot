@@ -90,11 +90,12 @@
 		NSArray <NSDictionary *> *replies = [self repliesForCommandString:commandString messageInfo:messageInfo byName:byName];
 		
 		// Send the replies.
-		[replies enumerateObjectsUsingBlock:^(NSDictionary *reply, NSUInteger idx, BOOL *stop) {
-			[self.delegate SA_botMessage:reply[SA_DB_MESSAGE_BODY] 
-									from:self 
-								withInfo:reply[SA_DB_MESSAGE_INFO]];
-		}];
+		[replies enumerateObjectsUsingBlock:^(NSDictionary *reply, NSUInteger idx, BOOL *stop)
+		 {
+			 [self.delegate SA_botMessage:reply[SA_DB_MESSAGE_BODY] 
+									 from:self 
+								 withInfo:reply[SA_DB_MESSAGE_INFO]];
+		 }];
 	}
 }
 
