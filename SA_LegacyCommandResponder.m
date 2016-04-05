@@ -14,6 +14,7 @@
 #import "SA_ErrorCatalog.h"
 #import "SA_SettingsManager.h"
 #import "NSString+SA_NSStringExtensions.h"
+#import "SA_DiceExpressionStringConstants.h"
 
 /*********************/
 #pragma mark Constants
@@ -183,12 +184,17 @@ static NSString * const SA_LCR_SETTINGS_INITIATIVE_FORMAT_COMPACT		=	@"COMPACT";
 		 NSString *tryStringBody = (labelDelimiterPosition.location != NSNotFound) ? [tryString substringToIndex:labelDelimiterPosition.location] : tryString;
 		 NSString *tryStringLabel = (labelDelimiterPosition.location != NSNotFound) ? [tryString substringFromIndex:labelDelimiterPosition.location + labelDelimiterPosition.length] : nil;
 		 
-		 // Make the "try string" a true roll string by prepending "1d20+".
-		 NSString *rollString = [NSString stringWithFormat:@"1d20+%@", tryStringBody];
+		 // Parse the prefix ("1d20").
+		 NSDictionary *prefixExpression = [self.parser expressionForString:@"1d20"];
 		 
-		 // Parse, evaluate, and format.
-		 NSDictionary *expression = [self.parser expressionForString:rollString];
-		 NSDictionary *results = [self.evaluator resultOfExpression:expression];
+		 // Parse the given try string.
+		 NSDictionary *tryExpression = [self.parser expressionForString:tryStringBody];
+		 
+		 // Join the prefix and tryString into a combined expression.
+		 NSDictionary *fullExpression = [self.parser expressionByJoiningExpression:prefixExpression toExpression:tryExpression withOperator:SA_DB_OPERATOR_PLUS];
+
+		 // Evaluate and format.
+		 NSDictionary *results = [self.evaluator resultOfExpression:fullExpression];
 		 NSString *formattedResultString = [self.resultsFormatter stringFromExpression:results];
 		 
 		 // Attach the label (if any) to the result string.
