@@ -144,7 +144,7 @@ static NSString * const SA_LCR_SETTINGS_INITIATIVE_FORMAT_COMPACT		=	@"COMPACT";
 		 NSString *formattedResultString = [self.resultsFormatter stringFromExpression:results];
 		 
 		 // Attach the label (if any) to the result string.
-		 NSString *replyMessageBody = (rollStringLabel != nil) ? [NSString stringWithFormat:@"(%@) %@", rollStringLabel, formattedResultString] : formattedResultString;
+		 NSString *replyMessageBody = (rollStringLabel != nil && [rollStringLabel isEqualToString:@""] == NO) ? [NSString stringWithFormat:@"(%@) %@", rollStringLabel, formattedResultString] : formattedResultString;
 
 		 [replies addObject:@{ SA_DB_MESSAGE_BODY	: replyMessageBody,
 							   SA_DB_MESSAGE_INFO	: messageInfo }];
@@ -198,7 +198,7 @@ static NSString * const SA_LCR_SETTINGS_INITIATIVE_FORMAT_COMPACT		=	@"COMPACT";
 		 NSString *formattedResultString = [self.resultsFormatter stringFromExpression:results];
 		 
 		 // Attach the label (if any) to the result string.
-		 NSString *replyMessageBody = (tryStringLabel != nil) ? [NSString stringWithFormat:@"(%@) %@", tryStringLabel, formattedResultString] : formattedResultString;
+		 NSString *replyMessageBody = (tryStringLabel != nil && [tryStringLabel isEqualToString:@""] == NO) ? [NSString stringWithFormat:@"(%@) %@", tryStringLabel, formattedResultString] : formattedResultString;
 		 
 		 [replies addObject:@{ SA_DB_MESSAGE_BODY	: replyMessageBody,
 							   SA_DB_MESSAGE_INFO	: messageInfo }];
