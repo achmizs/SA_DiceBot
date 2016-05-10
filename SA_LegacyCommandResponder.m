@@ -15,6 +15,7 @@
 #import "SA_SettingsManager.h"
 #import "NSString+SA_NSStringExtensions.h"
 #import "SA_DiceExpressionStringConstants.h"
+#import "SA_DiceComparators.h"
 
 /*********************/
 #pragma mark Constants
@@ -190,12 +191,12 @@ static NSString * const SA_LCR_SETTINGS_INITIATIVE_FORMAT_COMPACT		=	@"COMPACT";
 		 // Parse the given try string.
 		 NSDictionary *tryExpression = [self.parser expressionForString:tryStringBody];
 		 
-		 // Join the prefix and tryString into a combined expression.
+		 // Join the prefix and try expressions into a combined expression.
 		 NSDictionary *fullExpression = [self.parser expressionByJoiningExpression:prefixExpression toExpression:tryExpression withOperator:SA_DB_OPERATOR_PLUS];
 
 		 // Evaluate and format.
-		 NSDictionary *results = [self.evaluator resultOfExpression:fullExpression];
-		 NSString *formattedResultString = [self.resultsFormatter stringFromExpression:results];
+		 NSDictionary *result = [self.evaluator resultOfExpression:fullExpression];
+		 NSString *formattedResultString = [self.resultsFormatter stringFromExpression:result];
 		 
 		 // Attach the label (if any) to the result string.
 		 NSString *replyMessageBody = (tryStringLabel != nil && [tryStringLabel isEqualToString:@""] == NO) ? [NSString stringWithFormat:@"(%@) %@", tryStringLabel, formattedResultString] : formattedResultString;
@@ -223,6 +224,7 @@ static NSString * const SA_LCR_SETTINGS_INITIATIVE_FORMAT_COMPACT		=	@"COMPACT";
 {
 	__block NSMutableArray <NSDictionary *> *replies = [NSMutableArray arrayWithCapacity:params.count];
 	
+	// If there are no arguments, set an error.
 	if(params.count == 0)
 	{
 		[SA_ErrorCatalog setError:error 
@@ -231,26 +233,29 @@ static NSString * const SA_LCR_SETTINGS_INITIATIVE_FORMAT_COMPACT		=	@"COMPACT";
 		return replies;
 	}
 	
-	__block NSMutableArray <NSDictionary *> *replyComponents = [NSMutableArray arrayWithCapacity:params.count];
+	// Generate the set of raw (unformatted) results for every individual
+	// initiative roll.
+	__block NSMutableArray <NSDictionary *> *resultsAndLabels = [NSMutableArray arrayWithCapacity:params.count];
 	__block NSError *errorWhileEnumerating;
-	[params enumerateObjectsUsingBlock:^(NSString *initString, NSUInteger idx, BOOL *stop) 
+	[params enumerateObjectsUsingBlock:^(NSString *initString, NSUInteger idx, BOOL *stop)
 	 {
 		 // Remove the label (if any).
 		 NSRange labelDelimiterPosition = [initString rangeOfString:[self.settings valueforSetting:SA_LCR_SETTINGS_LABEL_DELIMITER error:error]];
 		 NSString *initStringBody = (labelDelimiterPosition.location != NSNotFound) ? [initString substringToIndex:labelDelimiterPosition.location] : initString;
 		 NSString *initStringLabel = (labelDelimiterPosition.location != NSNotFound) ? [initString substringFromIndex:labelDelimiterPosition.location + labelDelimiterPosition.length] : nil;
 		 
-		 // Make the "init string" a true roll string by prepending "1d20+".
-		 NSString *rollString = [NSString stringWithFormat:@"1d20+%@", initStringBody];
+		 // Parse the prefix ("1d20").
+		 NSDictionary *prefixExpression = [self.parser expressionForString:@"1d20"];
 		 
-		 // Parse, evaluate, and format.
-		 // (We use a separate formatter for initiative results, as the format
-		 // should be simple and concise, regardless of what the format settings
-		 // are in general.)
-		 NSDictionary *expression = [self.parser expressionForString:rollString];
-		 NSDictionary *results = [self.evaluator resultOfExpression:expression];
-		 NSString *formattedResultString = [self.initiativeResultsFormatter stringFromExpression:results];
+		 // Parse the given init string.
+		 NSDictionary *initExpression = [self.parser expressionForString:initStringBody];
 		 
+		 // Join the prefix and init expressions into a combined expression.
+		 NSDictionary *fullExpression = [self.parser expressionByJoiningExpression:prefixExpression toExpression:initExpression withOperator:SA_DB_OPERATOR_PLUS];
+		 
+		 // Evaluate and format.
+		 NSDictionary *result = [self.evaluator resultOfExpression:fullExpression];
+
 		 // Initiative strings MUST have a label. If even one label is missing,
 		 // set an error and send no reply lines.
 		 if(initStringLabel == nil || [initStringLabel isEqualToString:@""])
@@ -261,9 +266,9 @@ static NSString * const SA_LCR_SETTINGS_INITIATIVE_FORMAT_COMPACT		=	@"COMPACT";
 		 }
 		 else
 		 {
-			 [replyComponents addObject:@{@"result"	: formattedResultString,
-										  @"label"	: initStringLabel
-										  }];
+			 [resultsAndLabels addObject:@{@"result"	: result,
+										   @"label"		: initStringLabel
+										   }];
 		 }
 	 }];
 	
@@ -272,27 +277,52 @@ static NSString * const SA_LCR_SETTINGS_INITIATIVE_FORMAT_COMPACT		=	@"COMPACT";
 	{
 		*error = errorWhileEnumerating;
 	}
-	// Otherwise, assemble the replies.
+	// Otherwise, format the results and assemble the replies.
 	else
 	{
+		// Sort the init results.
+		[resultsAndLabels sortUsingComparator:^NSComparisonResult(NSDictionary *resultAndLabel1, NSDictionary *resultAndLabel2)
+		 {
+			 // These are flipped because we want to sort from highest to 
+			 // lowest.
+			 NSComparisonResult compareByInitRollResult = compareEvaluatedExpressionsByResult(resultAndLabel2[@"result"], resultAndLabel1[@"result"]);
+			 
+			 if(compareByInitRollResult == NSOrderedDescending || compareByInitRollResult == NSOrderedAscending)
+			 {
+				 return compareByInitRollResult;
+			 }
+			 else // if compareByInitRollResult == NSOrderedSame
+			 {
+				 // Again, these are flipped because we want to sort from
+				 // highest to lowest.
+				 NSComparisonResult compareByInitBonus = compareEvaluatedExpressionsByAttemptBonus(resultAndLabel2[@"result"], resultAndLabel1[@"result"]);
+				 
+				 return compareByInitBonus;				 
+			 }
+		 }];
+		
+		__block NSMutableArray <NSDictionary *> *replyComponents = [NSMutableArray arrayWithCapacity:params.count];
+		[resultsAndLabels enumerateObjectsUsingBlock:^(NSDictionary* resultAndLabel, NSUInteger idx, BOOL *stop) 
+		 {
+			 // Format.
+			 // (We use a separate formatter for initiative results, as the format
+			 // should be simple and concise, regardless of what the format settings
+			 // are in general.)
+			 NSString *formattedResultString = [self.initiativeResultsFormatter stringFromExpression:resultAndLabel[@"result"]];
+			 
+			 [replyComponents addObject:@{@"formattedResult"	: formattedResultString,
+										  @"label"				: resultAndLabel[@"label"]
+										  }];
+		 }];
+	
 		[replies addObject:@{ SA_DB_MESSAGE_BODY	: NSLocalizedString(@"Initiative!", nil),
 							  SA_DB_MESSAGE_INFO	: messageInfo }];
-		
-		// Sort the init results.
-		[replyComponents sortUsingComparator:^NSComparisonResult(NSDictionary *result1, NSDictionary *result2) {
-			if([result1[@"result"] integerValue] > [result2[@"result"] integerValue])
-				return NSOrderedAscending;
-			else if([result1[@"result"] integerValue] < [result2[@"result"] integerValue])
-				return NSOrderedDescending;
-			else
-				return NSOrderedSame;
-		}];
 		
 		// If EXPANDED format mode is set, add each reply.
 		if([[self.settings valueforSetting:SA_LCR_SETTINGS_INITIATIVE_FORMAT error:error] isEqualToString:SA_LCR_SETTINGS_INITIATIVE_FORMAT_EXPANDED])
 		{
 			[replyComponents enumerateObjectsUsingBlock:^(NSDictionary *replyComponent, NSUInteger idx, BOOL *stop){
-				NSString *replyMessageBody = [NSString stringWithFormat:@"%@ %@", replyComponent[@"label"], replyComponent[@"result"]];
+				NSString *replyMessageBody = [NSString stringWithFormat:@"%@ %@", replyComponent[@"label"], replyComponent[@"formattedResult"]];
 				[replies addObject:@{ SA_DB_MESSAGE_BODY	: replyMessageBody,
 									  SA_DB_MESSAGE_INFO	: messageInfo }];				
 			}];
